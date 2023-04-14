@@ -2,12 +2,10 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
-#[ApiResource]
 class Image
 {
     #[ORM\Id]
@@ -16,9 +14,11 @@ class Image
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?string $filename = null;
 
-    #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\ManyToOne(targetEntity: Twit::class, inversedBy: 'images')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Twit $twit = null;
 
     public function getId(): ?int
