@@ -37,10 +37,14 @@ class Twit
     #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Reply::class, orphanRemoval: true)]
     private Collection $replies;
 
+    #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Like::class, orphanRemoval: true)]
+    private Collection $likes;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->replies = new ArrayCollection();
+        $this->likes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -150,6 +154,36 @@ class Twit
             // set the owning side to null (unless already changed)
             if ($reply->getTwit() === $this) {
                 $reply->setTwit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Like>
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(Like $like): self
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes->add($like);
+            $like->setTwit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(Like $like): self
+    {
+        if ($this->likes->removeElement($like)) {
+            // set the owning side to null (unless already changed)
+            if ($like->getTwit() === $this) {
+                $like->setTwit(null);
             }
         }
 
