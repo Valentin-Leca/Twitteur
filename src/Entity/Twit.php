@@ -21,7 +21,7 @@ class Twit
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'twits')]
+    #[ORM\ManyToOne(targetEntity: User::class ,inversedBy: 'twits')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
@@ -31,20 +31,20 @@ class Twit
     #[ORM\Column]
     private ?int $upVote = null;
 
-    #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Image::class)]
-    private Collection $images;
-
-    #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Reply::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Reply::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $replies;
 
-    #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Like::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Like::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $likes;
+
+    #[ORM\OneToMany(mappedBy: 'twit', targetEntity: Image::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $images;
 
     public function __construct()
     {
-        $this->images = new ArrayCollection();
         $this->replies = new ArrayCollection();
         $this->likes = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -96,36 +96,6 @@ class Twit
     public function setUpVote(int $upVote): self
     {
         $this->upVote = $upVote;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Image>
-     */
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-    public function addImage(Image $image): self
-    {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setTwit($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImage(Image $image): self
-    {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getTwit() === $this) {
-                $image->setTwit(null);
-            }
-        }
 
         return $this;
     }
@@ -184,6 +154,36 @@ class Twit
             // set the owning side to null (unless already changed)
             if ($like->getTwit() === $this) {
                 $like->setTwit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setTwit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getTwit() === $this) {
+                $image->setTwit(null);
             }
         }
 
