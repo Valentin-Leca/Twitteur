@@ -23,7 +23,7 @@ class Reply
     #[ORM\JoinColumn(nullable: false)]
     private ?Twit $twit = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'replies')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 

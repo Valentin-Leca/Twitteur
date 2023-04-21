@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 class Image
@@ -15,10 +16,14 @@ class Image
 
     #[ORM\Column(length: 255)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private ?string $filename = null;
 
     #[ORM\ManyToOne(targetEntity: Twit::class, inversedBy: 'images')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     private ?Twit $twit = null;
 
     public function getId(): ?int
